@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FODMAP Eliminatiefase — Persoonlijk Overzicht</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: #f5f0e8; color: #2d2a26; line-height: 1.6; padding: 0 0 60px; }
+  .container { max-width: 820px; margin: 0 auto; padding: 0 16px; }
+  header { text-align: center; padding: 32px 16px 20px; border-bottom: 2px solid #2d2a26; margin-bottom: 8px; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; font-weight: 400; letter-spacing: -0.5px; margin-bottom: 6px; }
+  header p { font-size: 0.85rem; color: #6b6560; }
+  .search-container { position: sticky; top: 0; z-index: 100; background: #f5f0e8; padding: 16px 16px 8px; max-width: 852px; margin: 0 auto; }
+  .search-wrap { position: relative; }
+  .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #8a8480; pointer-events: none; }
+  .search-input { width: 100%; padding: 14px 44px 14px 44px; border: 2px solid #d9d3c9; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; background: #fff; color: #2d2a26; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .search-input:focus { border-color: #2d2a26; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .search-input::placeholder { color: #b0a89e; }
+  .search-clear { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: #e8e3db; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 0.75rem; color: #6b6560; display: none; align-items: center; justify-content: center; }
+  .search-clear.visible { display: flex; }
+  .legend { display: flex; gap: 16px; justify-content: center; padding: 10px 0 4px; font-size: 0.78rem; color: #6b6560; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .search-results-info { text-align: center; padding: 8px 0 4px; font-size: 0.82rem; color: #8a8480; display: none; }
+  .search-results-info.visible { display: block; }
+  .no-results { text-align: center; padding: 32px 16px; display: none; }
+  .no-results.visible { display: block; }
+  .no-results p { color: #8a8480; font-size: 0.9rem; }
+  .no-results .emoji { font-size: 2rem; margin-bottom: 8px; }
+  mark { background: #fce9a8; color: #2d2a26; padding: 1px 3px; border-radius: 3px; }
+  .product-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 16px; border-bottom: 1px solid #f0ebe4; font-size: 0.88rem; }
+  .product-item:last-child { border-bottom: none; }
+  .status-dot { flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%; margin-top: 7px; }
+  .dot-green { background: #3a6b2e; } .dot-orange { background: #c49215; } .dot-red { background: #8b3a2a; }
+  .product-info { flex: 1; }
+  .product-name-text { font-weight: 600; }
+  .product-detail-text { color: #6b6560; font-size: 0.82rem; display: block; margin-top: 1px; }
+  .product-category-tag { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #a09890; margin-top: 2px; display: block; }
+  .search-results-list { display: none; background: #fff; border: 1px solid #d9d3c9; border-radius: 12px; margin: 8px 0 20px; overflow: hidden; max-height: 60vh; overflow-y: auto; }
+  .search-results-list.visible { display: block; }
+  .main-content.hidden { display: none; }
+  .info-block { background: #fff; border: 1px solid #d9d3c9; border-radius: 12px; padding: 20px 24px; margin: 20px 0; }
+  .info-block h2 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 8px; font-weight: 400; }
+  .info-block p { font-size: 0.88rem; color: #4a4540; }
+  .columns-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .col-yes, .col-no { border-radius: 10px; padding: 14px 16px; font-size: 0.84rem; }
+  .col-yes { background: #e8f0e4; border: 1px solid #b8ccb0; } .col-no { background: #f5e8e4; border: 1px solid #d4b5ab; }
+  .col-yes .col-label { color: #3a6b2e; font-weight: 600; margin-bottom: 6px; } .col-no .col-label { color: #8b3a2a; font-weight: 600; margin-bottom: 6px; }
+  .col-yes ul, .col-no ul { list-style: none; padding: 0; }
+  .col-yes li::before { content: "✓ "; color: #3a6b2e; font-weight: 700; } .col-no li::before { content: "✗ "; color: #8b3a2a; font-weight: 700; }
+  .col-yes li, .col-no li { margin-bottom: 3px; }
+  .section-group { margin-top: 28px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 14px; padding: 0 4px 6px; border-bottom: 1px solid #c9c3b8; }
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .card { border-radius: 10px; padding: 16px; font-size: 0.84rem; }
+  .card.safe { background: #e8f0e4; border: 1px solid #b8ccb0; } .card.limited { background: #faf3e0; border: 1px solid #d9c98e; } .card.avoid { background: #f5e8e4; border: 1px solid #d4b5ab; }
+  .card.full-width { grid-column: 1 / -1; }
+  .badge { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; color: #fff; }
+  .safe .badge { background: #3a6b2e; } .limited .badge { background: #a08520; } .avoid .badge { background: #8b3a2a; }
+  .card ul { list-style: none; padding: 0; } .card li { margin-bottom: 3px; }
+  .note-text { font-size: 0.8rem; color: #6b6560; font-style: italic; margin-top: 8px; }
+  .meal-section { background: #fff; border: 1px solid #d9d3c9; border-radius: 14px; margin-bottom: 20px; overflow: hidden; }
+  .meal-header { padding: 18px 24px 14px; border-bottom: 1px solid #e8e3db; }
+  .meal-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.25rem; font-weight: 400; display: flex; align-items: center; gap: 10px; }
+  .meal-emoji { font-size: 1.4rem; } .meal-body { padding: 18px 24px 20px; }
+  .product-row { display: flex; align-items: baseline; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f0ebe4; font-size: 0.88rem; }
+  .product-row:last-child { border-bottom: none; }
+  .product-status { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #fff; }
+  .status-yes { background: #3a6b2e; } .status-limit { background: #a08520; } .status-no { background: #8b3a2a; }
+  .product-name { font-weight: 600; min-width: 160px; } .product-detail { color: #6b6560; font-size: 0.82rem; }
+  .sub-divider { text-align: center; margin: 14px 0 10px; font-size: 0.75rem; color: #b0a89e; letter-spacing: 3px; text-transform: uppercase; }
+  .tip-box { background: #f0ede6; border-radius: 8px; padding: 12px 16px; margin-top: 14px; font-size: 0.82rem; color: #4a4540; }
+  .tip-box strong { color: #2d2a26; }
+  .section-divider { text-align: center; margin: 32px 0; font-size: 0.8rem; color: #b0a89e; letter-spacing: 3px; text-transform: uppercase; }
+  footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #d9d3c9; font-size: 0.78rem; color: #8a8480; line-height: 1.7; }
+  @media (max-width: 600px) { header h1 { font-size: 1.5rem; } .columns-2, .card-grid { grid-template-columns: 1fr; } .product-row { flex-direction: column; gap: 2px; } .product-name { min-width: auto; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>FODMAP Eliminatiefase</h1>
+  <p>Persoonlijk overzicht — gebaseerd op jouw productenlijst</p>
+  <p style="font-size:0.75rem;margin-top:4px;color:#a09890;">Bron: Fodmap-dieet.nl (V7.2) &amp; Voedingscentrum.nl</p>
+</header>
+<div class="search-container">
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="search-input" id="searchInput" placeholder="Zoek een product... bijv. avocado, brood, linzen" autocomplete="off">
+    <button class="search-clear" id="searchClear" aria-label="Wis">✕</button>
+  </div>
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot" style="background:#3a6b2e"></span> Mag</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#c49215"></span> Beperkt</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#8b3a2a"></span> Vermijden</span>
+  </div>
+  <div class="search-results-info" id="searchInfo"></div>
+</div>
+<div class="container">
+  <div class="search-results-list" id="searchResults"></div>
+  <div class="no-results" id="noResults"><div class="emoji">🤔</div><p>Geen resultaten gevonden. Probeer een ander zoekwoord.</p></div>
+  <div class="main-content" id="mainContent">
+
+  <!-- TARWE -->
+  <div class="info-block">
+    <h2>Waarom geen tarwe — ook geen wit of bruin brood?</h2>
+    <p>Tarwe bevat fructanen. Alle vormen (wit, bruin, volkoren, rogge, spelt-tarweblends) zijn niet toegestaan.</p>
+    <div class="columns-2">
+      <div class="col-yes"><div class="col-label">✓ Wél toegestaan</div><ul><li>Glutenvrij brood</li><li>100% speltbrood (2 sneetjes)</li><li>Spelt zuurdesem (3 sneetjes)</li><li>Haver zuurdesem (2 sneetjes)</li><li>Rijst-/maiswafels</li><li>Havermout (max 50 g)</li><li>Rijst, boekweit, quinoa, teff</li><li>Glutenvrije pasta</li><li>Maistortilla (3 st)</li></ul></div>
+      <div class="col-no"><div class="col-label">✗ Niet toegestaan</div><ul><li>Wit / bruin / volkoren brood</li><li>Roggebrood</li><li>Meergranenbrood</li><li>Gewone pasta</li><li>Couscous / bulgur (tarwe)</li><li>Pizza, naan, roti, pita</li><li>Crackers (tarwe)</li><li>Cruesli / muesli</li><li>Croissant</li></ul></div>
+    </div>
+  </div>
+
+  <!-- GROENTE -->
+  <div class="section-group">
+    <h2 class="section-title">🥬 Groente</h2>
+    <div class="card-grid">
+      <div class="card safe"><div class="badge">✓ Mag</div><ul><li>Aardappel</li><li>Tomaat (gewone)</li><li>Komkommer</li><li>Wortel</li><li>Paprika rood</li><li>Sla (alle soorten)</li><li>Spinazie</li><li>Andijvie</li><li>Taugé</li><li>Radijs</li><li>Pastinaak</li><li>Knolselderij</li><li>Chinese kool</li><li>Boerenkool</li><li>Lente-ui (groen deel)</li><li>Oesterzwam</li><li>Champignon (uit blik)</li></ul></div>
+      <div class="card avoid"><div class="badge">✗ Vermijden</div><ul><li><strong>Ui (alle soorten)</strong></li><li><strong>Knoflook</strong></li><li>Lente-ui (wit deel)</li><li>Prei (wit deel)</li><li>Bloemkool</li><li>Champignons (vers)</li><li>Asperges</li><li>Aardpeer</li><li>Artisjok</li><li>Snijbonen</li><li>Zuurkool</li><li>Sugarsnaps</li></ul></div>
+    </div>
+    <div class="card-grid"><div class="card limited full-width"><div class="badge">! Max 1 oranje per maaltijd</div><ul style="columns:2;column-gap:24px;"><li>Avocado (40 g)</li><li>Aubergine (180 g)</li><li>Broccoli (200 g)</li><li>Courgette (70 g)</li><li>Sperziebonen (100 g)</li><li>Spruitjes (75 g)</li><li>Paksoi (100 g)</li><li>Venkel (75 g)</li><li>Witlof (25 g)</li><li>Witte kool (125 g)</li><li>Savooiekool (50 g)</li><li>Maïskolf (65 g)</li><li>Paprika groen (55 g)</li><li>Prei groen (50 g)</li><li>Doperwten (20 g)</li><li>Peultjes (25 g)</li><li>Bietjes vers (30 g)</li><li>Bleekselderij (20 g)</li><li>Okra (75 g)</li><li>Zoete aardappel (105 g)</li><li>Tomaten blik (120 g)</li><li>Cassave (100 g)</li></ul></div></div>
+  </div>
+
+  <!-- FRUIT -->
+  <div class="section-group">
+    <h2 class="section-title">🍓 Fruit (max 150 g per keer)</h2>
+    <div class="card-grid">
+      <div class="card safe"><div class="badge">✓ Mag</div><ul><li>Aardbei</li><li>Ananas</li><li>Banaan (niet overrijp!)</li><li>Citroen / limoen</li><li>Druiven</li><li>Kiwi</li><li>Mandarijn</li><li>Papaja</li><li>Rabarber</li><li>Sinaasappel</li><li>Dragon fruit</li></ul></div>
+      <div class="card avoid"><div class="badge">✗ Vermijden</div><ul><li><strong>Appel</strong></li><li><strong>Peer</strong></li><li>Mango</li><li>Watermeloen</li><li>Kers</li><li>Perzik / nectarine</li><li>Pruim</li><li>Abrikoos</li><li>Braam</li><li>Vijg (vers)</li><li>Banaan overrijp (spikkels!)</li><li>Fruit in blik</li><li>Gedroogd fruit (groot)</li></ul></div>
+    </div>
+    <div class="card-grid"><div class="card limited full-width"><div class="badge">! Beperkte portie</div><ul style="columns:2;column-gap:24px;"><li>Blauwe bessen (50 g)</li><li>Cantaloupe meloen (125 g)</li><li>Cranberry vers (130 g)</li><li>Frambozen (65 g)</li><li>Grapefruit (½ stuk)</li><li>Granaatappel (50 g)</li><li>Honingmeloen (100 g)</li><li>Kokosnoot vers (95 g)</li><li>Passiefruit (5 st)</li></ul><p class="note-text">Klein beetje gedroogd: bananenchips (10 st), cranberries (2 el), goji bessen (1 el), rozijnen (1 el), krenten (1 el).</p></div></div>
+  </div>
+
+  <!-- PEULVRUCHTEN -->
+  <div class="section-group">
+    <h2 class="section-title">🫘 Peulvruchten &amp; bonen</h2>
+    <div class="card-grid">
+      <div class="card avoid full-width"><div class="badge">✗ Verse peulvruchten vermijden</div><ul style="columns:2;column-gap:24px;"><li>Zwarte bonen</li><li>Witte bonen</li><li>Bruine bonen</li><li>Kidney beans</li><li>Sojabonen</li><li>Spliterwten</li><li>Tuinbonen</li><li>Kikkererwten (vers)</li><li>Linzen (vers/droog)</li><li>Falafel</li><li>Sojabrokken</li></ul></div>
+    </div>
+    <div class="card-grid"><div class="card limited full-width"><div class="badge">! Uit blik — kleine portie</div><ul><li>Kikkererwten blik (max 85 g)</li><li>Linzen gekookt/blik (max 45 g)</li><li>Lima/boterbonen blik (max 60 g)</li><li>Hummus (max 20 g)</li></ul><p class="note-text">Spoelen vermindert FODMAP's. Max 1 oranje per maaltijd.</p></div></div>
+  </div>
+
+  <!-- NOTEN -->
+  <div class="section-group">
+    <h2 class="section-title">🥜 Noten &amp; zaden</h2>
+    <div class="card-grid">
+      <div class="card safe"><div class="badge">✓ Mag</div><ul><li>Macadamia's</li><li>Pecannoten</li><li>Pinda's / pindakaas</li><li>Walnoten</li><li>Kastanjes</li><li>Vlozaad (psyllium)</li></ul></div>
+      <div class="card avoid"><div class="badge">✗ Vermijden</div><ul><li><strong>Pistachenoten</strong></li><li><strong>Cashewnoten</strong></li><li><strong>Dadels</strong></li><li>Kokosmeel</li><li>Gedroogde abrikozen/vijgen/mango</li></ul></div>
+    </div>
+    <div class="card-grid"><div class="card limited full-width"><div class="badge">! Let op portie</div><ul style="columns:2;column-gap:24px;"><li>Amandelen (10 st)</li><li>Hazelnoten (20 st)</li><li>Chiazaad (3 el)</li><li>Lijnzaad (1 el)</li><li>Pijnboompitten (4 el)</li><li>Pompoenpitten (60 g)</li><li>Sesamzaad (3 el)</li><li>Zonnebloempitten (3 el)</li><li>Amandelmeel (35 g)</li><li>Kokosrasp (35 g)</li></ul></div></div>
+  </div>
+
+  <!-- EIWITPOEDER -->
+  <div class="section-group">
+    <h2 class="section-title">💪 Eiwitpoeder</h2>
+    <div class="card-grid">
+      <div class="card safe"><div class="badge">✓ Veilig</div><ul><li>Whey protein isolate</li><li>Rijsteiwitpoeder</li><li>Ei-eiwitpoeder</li><li>Hennep-eiwitpoeder</li></ul></div>
+      <div class="card avoid"><div class="badge">✗ Vermijden</div><ul><li>Whey concentrate (lactose)</li><li>Erwten-concentrate</li><li>Casein concentrate</li><li>Soja-eiwitpoeder</li></ul></div>
+    </div>
+    <div class="card-grid"><div class="card limited full-width"><div class="badge">! Voorwaardelijk</div><ul><li><strong>Pea protein isolate</strong> — max 20-40 g. Kies isolate, niet concentrate.</li></ul><p class="note-text">Check etiket op inuline, chichorei, fructose-siroop, honing, sorbitol, ui/knoflookpoeder.</p></div></div>
+  </div>
+
+  <!-- ZUIVEL -->
+  <div class="section-group">
+    <h2 class="section-title">🧀 Zuivel &amp; dranken</h2>
+    <div class="card-grid">
+      <div class="card safe"><div class="badge">✓ Mag</div><ul><li>Harde kaas (Gouda, Cheddar, Edam, Emmentaler, Brie, Camembert)</li><li>Lactosevrije zuivel</li><li>Amandeldrink, rijstdrink, sojadrink</li><li>Sorbetijs</li><li>Koffie, espresso</li><li>Groene/witte/pepermunt thee</li><li>Cranberrysap</li><li>Water</li></ul></div>
+      <div class="card avoid"><div class="badge">✗ Vermijden</div><ul><li>Koemelk, yoghurt, kwark, room, vla</li><li>Roomijs, roomkaas</li><li>Gecondenseerde melk</li><li>Cappuccino (koemelk)</li><li>Chicorei-koffie</li><li>Cola Zero</li><li>Kamille-/venkel-/oolongthee</li><li>Sap van niet-toegestaan fruit</li><li>Sinaasappelsap uit pak</li></ul></div>
+    </div>
+    <div class="card-grid"><div class="card limited full-width"><div class="badge">! Let op portie</div><ul style="columns:2;column-gap:24px;"><li>Griekse yoghurt (110 g)</li><li>Mozzarella (100 g)</li><li>Halloumi (100 g)</li><li>Ricotta (80 g)</li><li>Geitenkaas (60 g)</li><li>Feta/hüttenkäse/smeerkaas (40 g)</li><li>Zure room (60 g)</li><li>Slagroom geklopt (2 el)</li><li>Havermelk (30-40 ml)</li><li>Kokosmelk (125 ml)</li><li>Sinaasappelsap vers (125 ml)</li><li>Bier/wijn/gin/whisky (1 glas)</li></ul></div></div>
+  </div>
+
+  <!-- ZOETMIDDELEN -->
+  <div class="section-group">
+    <h2 class="section-title">🍯 Zoetmiddelen &amp; overig</h2>
+    <div class="card-grid">
+      <div class="card safe"><div class="badge">✓ Mag</div><ul><li>Suiker (met mate), glucose, dextrose</li><li>Ahornsiroop, rijststroop</li><li>Stevia, aspartaam</li><li>Alle oliën &amp; vetten</li><li>Mayo, mosterd, ketjap, vissaus</li><li>Olijven, kappertjes, augurk</li><li>Azijn (behalve balsamico)</li><li>Chips naturel, popcorn</li><li>Vanille extract</li></ul></div>
+      <div class="card avoid"><div class="badge">✗ Vermijden</div><ul><li>Fructose, honing</li><li>Agavesiroop, appelstroop, diksap</li><li>Sorbitol, mannitol, xylitol</li><li>Maltitol, isomalt, lactitol</li><li>Erythritol</li><li>Inuline</li><li>Aïoli, tzatziki (knoflook)</li></ul></div>
+    </div>
+    <div class="card-grid"><div class="card limited full-width"><div class="badge">! Beperkt</div><ul style="columns:2;column-gap:24px;"><li>Balsamico azijn (2 el)</li><li>Cacaopoeder (12 g)</li><li>Chocolade puur (90 g)</li><li>Chocolade melk/wit (30 g)</li><li>Ketchup (2 el)</li><li>Tomatenpuree (30 g)</li><li>Tahin (30 g)</li><li>Hummus (20 g)</li></ul></div></div>
+  </div>
+
+  <div class="section-divider">· · ·  per maaltijd  · · ·</div>
+
+  <!-- ONTBIJT -->
+  <div class="meal-section"><div class="meal-header"><h2><span class="meal-emoji">☀️</span> 1. Ontbijt</h2></div><div class="meal-body">
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Havermout</span><span class="product-detail">Max 50 g (weeg af!)</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Amandelmelk</span><span class="product-detail">Tot 250 ml — beste keuze</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Barista havermelk</span><span class="product-detail">Max ~30-40 ml — alleen scheutje in koffie</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Chiazaad</span><span class="product-detail">Max 3 eetlepels</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Banaan</span><span class="product-detail">1 stuk — niet overrijp (geen spikkels)</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Amandelen</span><span class="product-detail">Max 10 stuks als topping</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Koffie</span><span class="product-detail">Zonder chicorei of inuline</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Glutenvrij brood / rijstwafels</span><span class="product-detail">Alternatief met kaas</span></div>
+    <div class="tip-box"><strong>Tip:</strong> Havermout met amandelmelk (niet havermelk). Top met banaan + chiazaad + 10 amandelen. Ander fruit: aardbeien, bosbessen (50 g), kiwi.</div>
+  </div></div>
+
+  <!-- LUNCH -->
+  <div class="meal-section"><div class="meal-header"><h2><span class="meal-emoji">🥪</span> 2. Lunch</h2></div><div class="meal-body">
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Glutenvrij brood</span><span class="product-detail">Schär, Consenza, Proceli</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">100% speltbrood</span><span class="product-detail">Max 2 sneetjes — check: geen tarwe</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Rijst-/maiswafels</span><span class="product-detail">Naturel</span></div>
+    <div class="product-row"><div class="product-status status-no">✗</div><span class="product-name">Wit/bruin/volkoren brood</span><span class="product-detail">Tarwe — niet toegestaan</span></div>
+    <div class="sub-divider">beleg</div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Belegen/oude/komijn kaas</span><span class="product-detail">Harde kaas, vrijwel lactosevrij</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Cottage cheese</span><span class="product-detail">Max 40 g — zachte kaas</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Pindakaas</span><span class="product-detail">Prima</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Tomaat / komkommer / wortel</span><span class="product-detail">Erbij als bijgerecht</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Ei</span><span class="product-detail">Gekookt of gebakken</span></div>
+    <div class="tip-box"><strong>Tip:</strong> Glutenvrij brood met belegen kaas + tomaat/komkommer. Rijstwafel met pindakaas + banaan. Check vleeswaren op ui/knoflook.</div>
+  </div></div>
+
+  <!-- DINER -->
+  <div class="meal-section"><div class="meal-header"><h2><span class="meal-emoji">🍽️</span> 3. Diner</h2></div><div class="meal-body">
+    <div class="sub-divider">basis</div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Aardappelen</span><span class="product-detail">Alle bereidingen</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Rijst</span><span class="product-detail">Alle soorten</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Glutenvrije pasta / boekweit / quinoa</span><span class="product-detail">Max 150 g gekookt</span></div>
+    <div class="product-row"><div class="product-status status-no">✗</div><span class="product-name">Gewone pasta / couscous</span><span class="product-detail">Tarwe</span></div>
+    <div class="sub-divider">eiwit</div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Vlees / vis / ei</span><span class="product-detail">Onbewerkt, niet gepaneerd</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Tofu hard / seitan / quorn</span><span class="product-detail">Vegetarisch</span></div>
+    <div class="sub-divider">groente</div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Wortel, tomaat, paprika, spinazie</span><span class="product-detail">Prima</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Broccoli / courgette / sperziebonen</span><span class="product-detail">Let op portie</span></div>
+    <div class="product-row"><div class="product-status status-no">✗</div><span class="product-name">Ui &amp; knoflook</span><span class="product-detail">Volledig vermijden</span></div>
+    <div class="tip-box"><strong>Smaak zonder ui/knoflook:</strong> Lente-ui (groen deel). Knoflook in olie bakken en verwijderen. Kruiden: basilicum, bieslook, oregano, gember, komijn, kurkuma, asafoetida (uivervanger!).</div>
+  </div></div>
+
+  <!-- SNACKS -->
+  <div class="meal-section"><div class="meal-header"><h2><span class="meal-emoji">🥜</span> 4. Snacks &amp; dranken</h2></div><div class="meal-body">
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Banaan / aardbei / kiwi</span><span class="product-detail">Max 150 g fruit per keer</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Walnoten / pecannoten / pinda's</span><span class="product-detail">Klein handje</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Amandelen</span><span class="product-detail">Max 10 stuks</span></div>
+    <div class="product-row"><div class="product-status status-no">✗</div><span class="product-name">Pistache / cashew / dadels</span><span class="product-detail">Vermijden</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Rijstwafels + pindakaas</span><span class="product-detail">Prima snack</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Wortel / komkommer rauw</span><span class="product-detail">Onbeperkt</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Pure chocolade</span><span class="product-detail">Max 90 g</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Chips naturel / popcorn</span><span class="product-detail">Check op ui/knoflookpoeder</span></div>
+    <div class="sub-divider">dranken</div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Water / Spa Rood</span><span class="product-detail">Onbeperkt</span></div>
+    <div class="product-row"><div class="product-status status-yes">✓</div><span class="product-name">Koffie &amp; thee (slap)</span><span class="product-detail">Scheutje havermelk (&lt;40 ml) mag</span></div>
+    <div class="product-row"><div class="product-status status-no">✗</div><span class="product-name">Cola Zero</span><span class="product-detail">Fructanen</span></div>
+    <div class="product-row"><div class="product-status status-limit">!</div><span class="product-name">Sinaasappelsap (vers)</span><span class="product-detail">Max 125 ml</span></div>
+  </div></div>
+
+  </div><!-- end mainContent -->
+  <footer>Bronnen: Fodmap-dieet.nl (V7.2) &amp; Voedingscentrum.nl<br>Dit overzicht vervangt geen professioneel dieetadvies.<br>Raadpleeg een gespecialiseerde diëtist voor begeleiding.</footer>
+</div>
+
+<script>
+const products=[
+// GROENTE GROEN
+{name:"Aardappel",cat:"Groente",status:"green",detail:"Alle bereidingen"},
+{name:"Tomaat (gewone)",cat:"Groente",status:"green",detail:"Vers, onbeperkt"},
+{name:"Komkommer",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Wortel / waspeen",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Paprika rood",cat:"Groente",status:"green",detail:"Capsaïcine — beperk bij gevoeligheid"},
+{name:"Sla (alle soorten)",cat:"Groente",status:"green",detail:"Boter, rode, rucola, ijsberg"},
+{name:"Spinazie",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Andijvie",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Taugé",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Radijs",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Pastinaak",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Knolselderij",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Chinese kool",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Boerenkool",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Lente-ui (groen deel)",cat:"Groente",status:"green",detail:"Alleen het groene deel"},
+{name:"Oesterzwam",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Champignon uit blik",cat:"Groente",status:"green",detail:"Alleen uit blik"},
+{name:"Zeewier",cat:"Groente",status:"green",detail:"Onbeperkt"},
+{name:"Snijbiet",cat:"Groente",status:"green",detail:"Onbeperkt"},
+// GROENTE ORANJE
+{name:"Avocado",cat:"Groente",status:"orange",detail:"Max 40 g (⅛ stuk)"},
+{name:"Aubergine",cat:"Groente",status:"orange",detail:"Max 180 g"},
+{name:"Broccoli",cat:"Groente",status:"orange",detail:"Max 200 g"},
+{name:"Courgette",cat:"Groente",status:"orange",detail:"Max 70 g"},
+{name:"Sperziebonen",cat:"Groente",status:"orange",detail:"Max 100 g"},
+{name:"Spruitjes",cat:"Groente",status:"orange",detail:"Max 75 g"},
+{name:"Paksoi",cat:"Groente",status:"orange",detail:"Max 100 g"},
+{name:"Venkel",cat:"Groente",status:"orange",detail:"Max 75 g"},
+{name:"Witlof",cat:"Groente",status:"orange",detail:"Max 25 g"},
+{name:"Witte kool",cat:"Groente",status:"orange",detail:"Max 125 g"},
+{name:"Savooiekool",cat:"Groente",status:"orange",detail:"Max 50 g"},
+{name:"Maïskolf",cat:"Groente",status:"orange",detail:"Max 65 g"},
+{name:"Mais uit blik",cat:"Groente",status:"orange",detail:"Max 15 g"},
+{name:"Paprika groen",cat:"Groente",status:"orange",detail:"Max 55 g"},
+{name:"Prei (groen deel)",cat:"Groente",status:"orange",detail:"Max 50 g"},
+{name:"Doperwten",cat:"Groente",status:"orange",detail:"Max 20 g"},
+{name:"Peultjes",cat:"Groente",status:"orange",detail:"Max 25 g"},
+{name:"Bietjes",cat:"Groente",status:"orange",detail:"Vers max 30 g, blik max 90 g"},
+{name:"Bleekselderij",cat:"Groente",status:"orange",detail:"Max 20 g"},
+{name:"Okra",cat:"Groente",status:"orange",detail:"Max 75 g"},
+{name:"Zoete aardappel",cat:"Groente",status:"orange",detail:"Max 105 g"},
+{name:"Tomaten uit blik",cat:"Groente",status:"orange",detail:"Max 120 g"},
+{name:"Tomaten gezeefd",cat:"Groente",status:"orange",detail:"Max 200 g"},
+{name:"Zongedroogde tomaten",cat:"Groente",status:"orange",detail:"Max 4 stuks"},
+{name:"Cassave",cat:"Groente",status:"orange",detail:"Max 100 g"},
+{name:"Artisjokhart uit blik",cat:"Groente",status:"orange",detail:"Max 55 g"},
+// GROENTE ROOD
+{name:"Ui (alle soorten)",cat:"Groente",status:"red",detail:"Volledig vermijden"},
+{name:"Knoflook",cat:"Groente",status:"red",detail:"Volledig vermijden"},
+{name:"Lente-ui (wit deel)",cat:"Groente",status:"red",detail:"Alleen groen deel mag"},
+{name:"Prei (wit deel)",cat:"Groente",status:"red",detail:"Alleen groen deel beperkt"},
+{name:"Bloemkool",cat:"Groente",status:"red",detail:"FODMAP-rijk"},
+{name:"Champignons (vers)",cat:"Groente",status:"red",detail:"Vers vermijden, uit blik mag"},
+{name:"Asperges",cat:"Groente",status:"red",detail:"FODMAP-rijk"},
+{name:"Aardpeer",cat:"Groente",status:"red",detail:"FODMAP-rijk"},
+{name:"Artisjok",cat:"Groente",status:"red",detail:"FODMAP-rijk"},
+{name:"Snijbonen",cat:"Groente",status:"red",detail:"FODMAP-rijk"},
+{name:"Zuurkool",cat:"Groente",status:"red",detail:"FODMAP-rijk"},
+{name:"Sugarsnaps",cat:"Groente",status:"red",detail:"FODMAP-rijk"},
+// FRUIT GROEN
+{name:"Aardbei",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Ananas",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Banaan",cat:"Fruit",status:"green",detail:"1 stuk — niet overrijp!"},
+{name:"Citroen",cat:"Fruit",status:"green",detail:"Onbeperkt"},
+{name:"Limoen",cat:"Fruit",status:"green",detail:"Onbeperkt"},
+{name:"Druiven",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Kiwi",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Mandarijn",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Sinaasappel",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Papaja",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Rabarber",cat:"Fruit",status:"green",detail:"Max 150 g"},
+{name:"Dragon fruit",cat:"Fruit",status:"green",detail:"Max 150 g"},
+// FRUIT ORANJE
+{name:"Blauwe bessen / bosbessen",cat:"Fruit",status:"orange",detail:"Max 50 g"},
+{name:"Cantaloupe meloen",cat:"Fruit",status:"orange",detail:"Max 125 g"},
+{name:"Cranberry vers",cat:"Fruit",status:"orange",detail:"Max 130 g"},
+{name:"Frambozen",cat:"Fruit",status:"orange",detail:"Max 65 g"},
+{name:"Grapefruit",cat:"Fruit",status:"orange",detail:"Max ½ stuk"},
+{name:"Granaatappel",cat:"Fruit",status:"orange",detail:"Max 50 g"},
+{name:"Honingmeloen",cat:"Fruit",status:"orange",detail:"Max 100 g"},
+{name:"Kokosnoot vers",cat:"Fruit",status:"orange",detail:"Max 95 g"},
+{name:"Passiefruit",cat:"Fruit",status:"orange",detail:"Max 5 stuks"},
+// FRUIT ROOD
+{name:"Appel",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Peer",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Mango",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Watermeloen",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Kers / kersen",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Perzik",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Nectarine",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Pruim",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Abrikoos",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Braam",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Vijg",cat:"Fruit",status:"red",detail:"FODMAP-rijk"},
+{name:"Banaan overrijp (spikkels)",cat:"Fruit",status:"red",detail:"Overrijp = FODMAP-rijk!"},
+{name:"Fruit in blik",cat:"Fruit",status:"red",detail:"Vermijden"},
+// PEULVRUCHTEN
+{name:"Kikkererwten (vers)",cat:"Peulvruchten",status:"red",detail:"Galactanen — vermijden"},
+{name:"Kikkererwten uit blik",cat:"Peulvruchten",status:"orange",detail:"Max 85 g — spoelen"},
+{name:"Linzen (vers/droog)",cat:"Peulvruchten",status:"red",detail:"Galactanen — vermijden"},
+{name:"Linzen gekookt/blik",cat:"Peulvruchten",status:"orange",detail:"Max 45 g"},
+{name:"Zwarte bonen",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Witte bonen",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Bruine bonen",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Kidney beans",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Sojabonen",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Spliterwten",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Tuinbonen",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Lima/boterbonen uit blik",cat:"Peulvruchten",status:"orange",detail:"Max 60 g"},
+{name:"Hummus",cat:"Peulvruchten",status:"orange",detail:"Max 20 g (~1 el)"},
+{name:"Falafel",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+{name:"Sojabrokken",cat:"Peulvruchten",status:"red",detail:"Vermijden"},
+// NOTEN
+{name:"Macadamia's",cat:"Noten & zaden",status:"green",detail:"Onbeperkt"},
+{name:"Pecannoten",cat:"Noten & zaden",status:"green",detail:"Onbeperkt"},
+{name:"Pinda's",cat:"Noten & zaden",status:"green",detail:"Onbeperkt"},
+{name:"Pindakaas",cat:"Noten & zaden",status:"green",detail:"Onbeperkt"},
+{name:"Walnoten",cat:"Noten & zaden",status:"green",detail:"Onbeperkt"},
+{name:"Kastanjes",cat:"Noten & zaden",status:"green",detail:"Onbeperkt"},
+{name:"Amandelen",cat:"Noten & zaden",status:"orange",detail:"Max 10 stuks"},
+{name:"Hazelnoten",cat:"Noten & zaden",status:"orange",detail:"Max 20 stuks"},
+{name:"Chiazaad",cat:"Noten & zaden",status:"orange",detail:"Max 3 el"},
+{name:"Lijnzaad",cat:"Noten & zaden",status:"orange",detail:"Max 1 el"},
+{name:"Pijnboompitten",cat:"Noten & zaden",status:"orange",detail:"Max 4 el"},
+{name:"Pompoenpitten",cat:"Noten & zaden",status:"orange",detail:"Max 60 g"},
+{name:"Sesamzaad",cat:"Noten & zaden",status:"orange",detail:"Max 3 el"},
+{name:"Zonnebloempitten",cat:"Noten & zaden",status:"orange",detail:"Max 3 el"},
+{name:"Amandelmeel",cat:"Noten & zaden",status:"orange",detail:"Max 35 g"},
+{name:"Kokosrasp",cat:"Noten & zaden",status:"orange",detail:"Max 35 g"},
+{name:"Pistachenoten",cat:"Noten & zaden",status:"red",detail:"FODMAP-rijk"},
+{name:"Cashewnoten",cat:"Noten & zaden",status:"red",detail:"FODMAP-rijk"},
+{name:"Dadels",cat:"Noten & zaden",status:"red",detail:"Hoog in fructose"},
+{name:"Kokosmeel",cat:"Noten & zaden",status:"red",detail:"FODMAP-rijk"},
+// EIWITPOEDER
+{name:"Whey protein isolate",cat:"Eiwitpoeder",status:"green",detail:"Lactose eruit — veiligste keuze"},
+{name:"Rijsteiwitpoeder",cat:"Eiwitpoeder",status:"green",detail:"Van nature FODMAP-arm"},
+{name:"Ei-eiwitpoeder",cat:"Eiwitpoeder",status:"green",detail:"Geen FODMAP's"},
+{name:"Hennep-eiwitpoeder",cat:"Eiwitpoeder",status:"green",detail:"FODMAP-arm"},
+{name:"Pea protein isolate (erwteneiwitpoeder)",cat:"Eiwitpoeder",status:"orange",detail:"Max 20-40 g — alleen isolate"},
+{name:"Whey protein concentrate",cat:"Eiwitpoeder",status:"red",detail:"Bevat lactose"},
+{name:"Casein concentrate",cat:"Eiwitpoeder",status:"red",detail:"Bevat lactose"},
+{name:"Erwteneiwitpoeder (concentrate)",cat:"Eiwitpoeder",status:"red",detail:"Meer FODMAP's"},
+{name:"Soja-eiwitpoeder",cat:"Eiwitpoeder",status:"red",detail:"Wisselend — vermijden"},
+// ZUIVEL
+{name:"Harde kaas (Gouda, Cheddar, Edam)",cat:"Zuivel",status:"green",detail:"Vrijwel lactosevrij"},
+{name:"Brie / Camembert",cat:"Zuivel",status:"green",detail:"Laag in lactose"},
+{name:"Belegen kaas",cat:"Zuivel",status:"green",detail:"Prima"},
+{name:"Oude kaas",cat:"Zuivel",status:"green",detail:"Prima"},
+{name:"Komijnekaas",cat:"Zuivel",status:"green",detail:"Prima"},
+{name:"Lactosevrije melk",cat:"Zuivel",status:"green",detail:"Onbeperkt"},
+{name:"Lactosevrije yoghurt",cat:"Zuivel",status:"green",detail:"Onbeperkt"},
+{name:"Lactosevrije kwark",cat:"Zuivel",status:"green",detail:"Onbeperkt"},
+{name:"Sorbetijs",cat:"Zuivel",status:"green",detail:"Van toegestaan fruit"},
+{name:"Griekse yoghurt",cat:"Zuivel",status:"orange",detail:"Max 110 g"},
+{name:"Mozzarella",cat:"Zuivel",status:"orange",detail:"Max 100 g"},
+{name:"Halloumi",cat:"Zuivel",status:"orange",detail:"Max 100 g"},
+{name:"Ricotta",cat:"Zuivel",status:"orange",detail:"Max 80 g"},
+{name:"Geitenkaas",cat:"Zuivel",status:"orange",detail:"Max 60 g"},
+{name:"Feta",cat:"Zuivel",status:"orange",detail:"Max 40 g"},
+{name:"Cottage cheese / hüttenkäse",cat:"Zuivel",status:"orange",detail:"Max 40 g"},
+{name:"Mascarpone",cat:"Zuivel",status:"orange",detail:"Max 40 g"},
+{name:"Smeerkaas",cat:"Zuivel",status:"orange",detail:"Max 40 g"},
+{name:"Crème fraîche",cat:"Zuivel",status:"orange",detail:"Max 40 g"},
+{name:"Slagroom geklopt",cat:"Zuivel",status:"orange",detail:"Max 2 el"},
+{name:"Zure room",cat:"Zuivel",status:"orange",detail:"Max 60 g"},
+{name:"Koemelk",cat:"Zuivel",status:"red",detail:"Lactose — vermijden"},
+{name:"Yoghurt (gewoon)",cat:"Zuivel",status:"red",detail:"Lactose — vermijden"},
+{name:"Kwark (gewoon)",cat:"Zuivel",status:"red",detail:"Lactose — vermijden"},
+{name:"Room (gewoon)",cat:"Zuivel",status:"red",detail:"Lactose — vermijden"},
+{name:"Vla",cat:"Zuivel",status:"red",detail:"Vermijden"},
+{name:"Roomijs",cat:"Zuivel",status:"red",detail:"Vermijden"},
+// DRANKEN
+{name:"Water / mineraalwater",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Koffie / espresso",cat:"Dranken",status:"green",detail:"Zonder chicorei/inuline"},
+{name:"Groene thee",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Witte thee",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Pepermunt thee",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Slappe zwarte thee",cat:"Dranken",status:"green",detail:"Slap getrokken"},
+{name:"Cranberrysap",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Amandeldrink",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Rijstdrink",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Sojadrink",cat:"Dranken",status:"green",detail:"Onbeperkt"},
+{name:"Havermelk / haverdrink",cat:"Dranken",status:"orange",detail:"Max 30-40 ml"},
+{name:"Kokoswater",cat:"Dranken",status:"orange",detail:"Max 100 ml"},
+{name:"Kokosmelk",cat:"Dranken",status:"orange",detail:"Max 125 ml"},
+{name:"Sinaasappelsap (vers)",cat:"Dranken",status:"orange",detail:"Max 125 ml — niet uit pak"},
+{name:"Tomatensap",cat:"Dranken",status:"orange",detail:"Max 125 ml"},
+{name:"Bier",cat:"Dranken",status:"orange",detail:"Max 1 glas"},
+{name:"Wijn (rood/wit)",cat:"Dranken",status:"orange",detail:"Max 1 glas"},
+{name:"Gin / whisky / wodka",cat:"Dranken",status:"orange",detail:"Max 1 glas"},
+{name:"Cola Zero",cat:"Dranken",status:"red",detail:"Bevat fructanen"},
+{name:"Chicorei-koffie",cat:"Dranken",status:"red",detail:"Bevat inuline"},
+{name:"Cappuccino (koemelk)",cat:"Dranken",status:"red",detail:"Lactose — gebruik lactosevrij"},
+{name:"Appelsap / perensap",cat:"Dranken",status:"red",detail:"FODMAP-rijk fruit"},
+{name:"Sinaasappelsap uit pak",cat:"Dranken",status:"red",detail:"Uit concentraat"},
+{name:"Kamillethee",cat:"Dranken",status:"red",detail:"FODMAP-rijk"},
+{name:"Venkelthee",cat:"Dranken",status:"red",detail:"FODMAP-rijk"},
+{name:"Oolongthee",cat:"Dranken",status:"red",detail:"FODMAP-rijk"},
+// GRANEN
+{name:"Rijst (alle soorten)",cat:"Granen",status:"green",detail:"Onbeperkt"},
+{name:"Glutenvrij brood",cat:"Granen",status:"green",detail:"Onbeperkt"},
+{name:"Rijstwafels",cat:"Granen",status:"green",detail:"Naturel"},
+{name:"Maiswafels",cat:"Granen",status:"green",detail:"Onbeperkt"},
+{name:"Maïsmeel / maïzena / polenta",cat:"Granen",status:"green",detail:"Onbeperkt"},
+{name:"Boekweit",cat:"Granen",status:"green",detail:"Meel en noedels"},
+{name:"Quinoa",cat:"Granen",status:"green",detail:"Meel, pasta en vlokken"},
+{name:"Teff",cat:"Granen",status:"green",detail:"Onbeperkt"},
+{name:"Sorghum",cat:"Granen",status:"green",detail:"Onbeperkt"},
+{name:"Tapioca",cat:"Granen",status:"green",detail:"Onbeperkt"},
+{name:"Rijstnoedels / mihoen",cat:"Granen",status:"green",detail:"Van rijstmeel"},
+{name:"Popcorn",cat:"Granen",status:"green",detail:"Van mais of gierst"},
+{name:"Gierst",cat:"Granen",status:"green",detail:"Meel en vlokken"},
+{name:"Havermout",cat:"Granen",status:"orange",detail:"Max 50 g"},
+{name:"Cornflakes glutenvrij",cat:"Granen",status:"orange",detail:"Max 30 g"},
+{name:"Glutenvrije pasta",cat:"Granen",status:"orange",detail:"Max 150 g gekookt"},
+{name:"Maistortilla",cat:"Granen",status:"orange",detail:"Max 3 stuks (50 g)"},
+{name:"Speltbrood 100%",cat:"Granen",status:"orange",detail:"Max 2 sneetjes"},
+{name:"Speltbrood zuurdesem",cat:"Granen",status:"orange",detail:"Max 3 sneetjes"},
+{name:"Speltpasta",cat:"Granen",status:"orange",detail:"Max 75 g ongekookt"},
+{name:"Haverbrood zuurdesem",cat:"Granen",status:"orange",detail:"Max 2 sneetjes"},
+{name:"Beschuit",cat:"Granen",status:"orange",detail:"Max 2 stuks"},
+{name:"Maisbrood",cat:"Granen",status:"orange",detail:"Max 3 sneetjes"},
+{name:"Bulgur",cat:"Granen",status:"orange",detail:"Max 60 g gekookt"},
+{name:"Tarwebrood (wit/bruin/volkoren)",cat:"Granen",status:"red",detail:"Fructanen — vermijden"},
+{name:"Roggebrood",cat:"Granen",status:"red",detail:"Vermijden"},
+{name:"Meergranenbrood",cat:"Granen",status:"red",detail:"Vermijden"},
+{name:"Gewone pasta (tarwe)",cat:"Granen",status:"red",detail:"Vermijden"},
+{name:"Couscous (tarwe)",cat:"Granen",status:"red",detail:"Vermijden"},
+{name:"Pizza",cat:"Granen",status:"red",detail:"Tarwedeeg"},
+{name:"Naan / pita / roti",cat:"Granen",status:"red",detail:"Tarwe"},
+{name:"Cruesli / muesli",cat:"Granen",status:"red",detail:"Vermijden"},
+{name:"Croissant",cat:"Granen",status:"red",detail:"Tarwe"},
+// ZOETMIDDELEN
+{name:"Suiker (kristalsuiker)",cat:"Zoetmiddelen",status:"green",detail:"Met mate"},
+{name:"Ahornsiroop",cat:"Zoetmiddelen",status:"green",detail:"Toegestaan"},
+{name:"Rijststroop",cat:"Zoetmiddelen",status:"green",detail:"Toegestaan"},
+{name:"Stevia",cat:"Zoetmiddelen",status:"green",detail:"Toegestaan"},
+{name:"Aspartaam",cat:"Zoetmiddelen",status:"green",detail:"Toegestaan"},
+{name:"Glucose / dextrose",cat:"Zoetmiddelen",status:"green",detail:"Toegestaan"},
+{name:"Honing",cat:"Zoetmiddelen",status:"red",detail:"Hoog in fructose"},
+{name:"Fructose",cat:"Zoetmiddelen",status:"red",detail:"Vermijden"},
+{name:"Agavesiroop",cat:"Zoetmiddelen",status:"red",detail:"Hoog in fructose"},
+{name:"Sorbitol (E420)",cat:"Zoetmiddelen",status:"red",detail:"Polyol — vermijden"},
+{name:"Mannitol (E421)",cat:"Zoetmiddelen",status:"red",detail:"Polyol — vermijden"},
+{name:"Xylitol (E967)",cat:"Zoetmiddelen",status:"red",detail:"Polyol — vermijden"},
+{name:"Maltitol (E965)",cat:"Zoetmiddelen",status:"red",detail:"Polyol — vermijden"},
+{name:"Isomalt (E953)",cat:"Zoetmiddelen",status:"red",detail:"Polyol — vermijden"},
+{name:"Erythritol (E968)",cat:"Zoetmiddelen",status:"red",detail:"Polyol — vermijden"},
+{name:"Inuline",cat:"Zoetmiddelen",status:"red",detail:"Fructaan — vermijden"},
+// OVERIG
+{name:"Olijfolie (alle oliën/vetten)",cat:"Overig",status:"green",detail:"Toegestaan"},
+{name:"Boter / ghee",cat:"Overig",status:"green",detail:"Toegestaan"},
+{name:"Mayonaise",cat:"Overig",status:"green",detail:"Toegestaan"},
+{name:"Mosterd",cat:"Overig",status:"green",detail:"Toegestaan"},
+{name:"Ketjap / sojasaus",cat:"Overig",status:"green",detail:"Toegestaan"},
+{name:"Olijven",cat:"Overig",status:"green",detail:"Toegestaan"},
+{name:"Augurk",cat:"Overig",status:"green",detail:"Toegestaan"},
+{name:"Chips naturel",cat:"Overig",status:"green",detail:"Check op ui/knoflookpoeder"},
+{name:"Seitan",cat:"Overig",status:"green",detail:"Vegetarisch — FODMAP-arm"},
+{name:"Tofu hard (tahoe)",cat:"Overig",status:"green",detail:"Alleen harde variant"},
+{name:"Quorn",cat:"Overig",status:"green",detail:"Vegetarisch — FODMAP-arm"},
+{name:"Tempeh",cat:"Overig",status:"orange",detail:"Max 150 g"},
+{name:"Chocolade puur",cat:"Overig",status:"orange",detail:"Max 90 g"},
+{name:"Chocolade melk/wit",cat:"Overig",status:"orange",detail:"Max 30 g"},
+{name:"Ketchup",cat:"Overig",status:"orange",detail:"Max 2 el"},
+{name:"Tomatenpuree",cat:"Overig",status:"orange",detail:"Max 30 g"},
+{name:"Balsamico azijn",cat:"Overig",status:"orange",detail:"Max 2 el"},
+{name:"Tahin",cat:"Overig",status:"orange",detail:"Max 30 g"},
+{name:"Aïoli",cat:"Overig",status:"red",detail:"Bevat knoflook"},
+{name:"Tzatziki",cat:"Overig",status:"red",detail:"Bevat knoflook"},
+{name:"Tofu zacht (zijden tofu)",cat:"Overig",status:"red",detail:"FODMAP-rijk"},
+// VLEES
+{name:"Vlees (alle soorten onbewerkt)",cat:"Vlees & vis",status:"green",detail:"Kip, rund, varken etc."},
+{name:"Vis (alle soorten onbewerkt)",cat:"Vlees & vis",status:"green",detail:"Zalm, kabeljauw, garnalen etc."},
+{name:"Eieren",cat:"Vlees & vis",status:"green",detail:"Alle bereidingen"},
+{name:"Kipnuggets / vissticks",cat:"Vlees & vis",status:"red",detail:"Gepaneerd met tarwe"},
+];
+
+const si=document.getElementById('searchInput'),sc=document.getElementById('searchClear'),sinfo=document.getElementById('searchInfo'),sr=document.getElementById('searchResults'),nr=document.getElementById('noResults'),mc=document.getElementById('mainContent');
+function norm(s){return s.toLowerCase().replace(/[éèê]/g,'e').replace(/[àáâ]/g,'a').replace(/[ïí]/g,'i').replace(/[öó]/g,'o').replace(/[üú]/g,'u').replace(/[ç]/g,'c');}
+function hl(t,q){if(!q)return t;const n=norm(t),qn=norm(q),i=n.indexOf(qn);if(i===-1)return t;return t.slice(0,i)+'<mark>'+t.slice(i,i+q.length)+'</mark>'+t.slice(i+q.length);}
+function dc(s){return s==='green'?'dot-green':s==='orange'?'dot-orange':'dot-red';}
+function doSearch(){
+  const q=si.value.trim();sc.classList.toggle('visible',q.length>0);
+  if(q.length<2){sr.classList.remove('visible');sinfo.classList.remove('visible');nr.classList.remove('visible');mc.classList.remove('hidden');return;}
+  const qn=norm(q),m=products.filter(p=>norm(p.name).includes(qn)||norm(p.detail).includes(qn)||norm(p.cat).includes(qn));
+  const o={green:0,orange:1,red:2};m.sort((a,b)=>{const ae=norm(a.name).startsWith(qn)?0:1,be=norm(b.name).startsWith(qn)?0:1;if(ae!==be)return ae-be;return o[a.status]-o[b.status];});
+  mc.classList.add('hidden');
+  if(!m.length){sr.classList.remove('visible');sinfo.classList.remove('visible');nr.classList.add('visible');return;}
+  nr.classList.remove('visible');sinfo.textContent=m.length+' resultaa'+(m.length!==1?'ten':'t')+' voor "'+q+'"';sinfo.classList.add('visible');
+  let h='';m.forEach(p=>{h+='<div class="product-item"><div class="status-dot '+dc(p.status)+'"></div><div class="product-info"><span class="product-name-text">'+hl(p.name,q)+'</span><span class="product-detail-text">'+hl(p.detail,q)+'</span><span class="product-category-tag">'+p.cat+'</span></div></div>';});
+  sr.innerHTML=h;sr.classList.add('visible');
+}
+si.addEventListener('input',doSearch);sc.addEventListener('click',()=>{si.value='';si.focus();doSearch();});
+</script>
+</body>
+</html>
